@@ -18,15 +18,15 @@ namespace calculator
 		{
 			InitializeComponent();
 
-			if (!File.Exists(@"C:/Users/Ikon/Desktop/Work/OS&SP/lab1/addition/bin/Debug/addition.dll"))
+			if (!File.Exists(@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/addition/bin/Debug/addition.dll"))
 			{
 				button1.Enabled = false;
 			}
-			if (!File.Exists(@"C:/Users/Ikon/Desktop/Work/OS&SP/lab1/subtraction/bin/Debug/subtraction.dll"))
+			if (!File.Exists(@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/subtraction/bin/Debug/subtraction.dll"))
 			{
 				button2.Enabled = false;
 			}
-			if (!File.Exists(@"C:/Users/Ikon/Desktop/Work/OS&SP/lab1/multiplication/bin/Debug/multiplication.dll"))
+			if (!File.Exists(@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/multiplication/bin/Debug/multiplication.dll"))
 			{
 				button3.Enabled = false;
 			}
@@ -62,7 +62,7 @@ namespace calculator
 				if (textBox1.Text == "" || textBox2.Text == "")
 					return;
 
-				Assembly asm = Assembly.LoadFrom(@"C:/Users/Ikon/Desktop/Work/OS&SP/lab1/addition/bin/Debug/addition.dll");
+				Assembly asm = Assembly.LoadFrom(@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/addition/bin/Debug/addition.dll");
 				Type t = asm.GetType("addition", true, true);
 				object obj = Activator.CreateInstance(t);
 				MethodInfo add = t.GetMethod("add");
@@ -105,7 +105,7 @@ namespace calculator
 				if (textBox1.Text == "" || textBox2.Text == "")
 					return;
 
-				Assembly asm = Assembly.LoadFrom(@"C:/Users/Ikon/Desktop/Work/OS&SP/lab1/subtraction/bin/Debug/subtraction.dll");
+				Assembly asm = Assembly.LoadFrom(@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/subtraction/bin/Debug/subtraction.dll");
 				Type t = asm.GetType("subtraction", true, true);
 				object obj = Activator.CreateInstance(t);
 				MethodInfo sub = t.GetMethod("sub");
@@ -148,7 +148,7 @@ namespace calculator
 				if (textBox1.Text == "" || textBox2.Text == "")
 					return;
 
-				Assembly asm = Assembly.LoadFrom(@"C:/Users/Ikon/Desktop/Work/OS&SP/lab1/multiplication/bin/Debug/multiplication.dll");
+				Assembly asm = Assembly.LoadFrom(@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/multiplication/bin/Debug/multiplication.dll");
 				Type t = asm.GetType("multiplication", true, true);
 				object obj = Activator.CreateInstance(t);
 				MethodInfo mul = t.GetMethod("mul");

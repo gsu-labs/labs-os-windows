@@ -15,15 +15,14 @@ namespace calculator
 		public Form1()
 		{
 			InitializeComponent();
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 		}
 
 		private void newToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Form2 newMDIChild = new Form2();
-			// Set the Parent Form of the Child window.  
-			newMDIChild.MdiParent = this;
-			// Display the new form.  
-			newMDIChild.Show();
+			Form2 Calculator = new Form2();
+			Calculator.MdiParent = this;
+			Calculator.Show();
 		}
 	}
 }

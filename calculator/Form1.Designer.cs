@@ -83,21 +83,21 @@
 			// cascadeToolStripMenuItem
 			// 
 			this.cascadeToolStripMenuItem.Name = "cascadeToolStripMenuItem";
-			this.cascadeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.cascadeToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
 			this.cascadeToolStripMenuItem.Text = "Каскадом";
 			this.cascadeToolStripMenuItem.Click += new System.EventHandler(this.cascadeToolStripMenuItem_Click);
 			// 
 			// minimizedToolStripMenuItem
 			// 
 			this.minimizedToolStripMenuItem.Name = "minimizedToolStripMenuItem";
-			this.minimizedToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.minimizedToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
 			this.minimizedToolStripMenuItem.Text = "Свернуть все";
 			this.minimizedToolStripMenuItem.Click += new System.EventHandler(this.minimizedToolStripMenuItem_Click);
 			// 
 			// normalToolStripMenuItem
 			// 
 			this.normalToolStripMenuItem.Name = "normalToolStripMenuItem";
-			this.normalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.normalToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
 			this.normalToolStripMenuItem.Text = "Разместить в окне";
 			this.normalToolStripMenuItem.Click += new System.EventHandler(this.normalToolStripMenuItem_Click);
 			// 
@@ -144,6 +144,6 @@
 		private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
 		private System.Windows.Forms.MenuStrip menuStrip1;
-		private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+		public System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
 	}
 }

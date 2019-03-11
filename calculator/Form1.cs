@@ -21,7 +21,7 @@ namespace calculator
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Form2 Calculator = new Form2();
+			Form2 Calculator = new Form2(this);
 			Calculator.MdiParent = this;
 			Calculator.Show();
 			closeToolStripMenuItem.Visible = true;

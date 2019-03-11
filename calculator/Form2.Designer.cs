@@ -180,6 +180,7 @@
 			this.MinimumSize = new System.Drawing.Size(270, 150);
 			this.Name = "Form2";
 			this.Text = "Калькулятор";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form2_FormClosing);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

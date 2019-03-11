@@ -18,8 +18,11 @@ namespace calculator
 		string subtractionPath = Directory.GetCurrentDirectory();
 		string multiplicationPath = Directory.GetCurrentDirectory();
 
-		public Form2()
+		Form1 f1;
+
+		public Form2(Form1 form1)
 		{
+			f1 = form1;
 			InitializeComponent();
 
 			for (int i = 0; i < 3; i++)
@@ -197,6 +200,12 @@ namespace calculator
 				button3.Enabled = false;
 				MessageBox.Show("Could not load DLL with multiplication function or input error");
 			}
+		}
+
+		private void Form2_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			if (f1.MdiChildren.Length == 1)
+				f1.closeToolStripMenuItem.Visible = false;
 		}
 	}
 }

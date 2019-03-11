@@ -14,19 +14,37 @@ namespace calculator
 {
 	public partial class Form1 : Form
 	{
+		string additionPath = Directory.GetCurrentDirectory();
+		string subtractionPath = Directory.GetCurrentDirectory();
+		string multiplicationPath = Directory.GetCurrentDirectory();
+
 		public Form1()
 		{
 			InitializeComponent();
 
-			if (!File.Exists(@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/addition/bin/Debug/addition.dll"))
+			for (int i = 0; i < 3; i++)
+			{
+				additionPath = additionPath.Substring(0, additionPath.LastIndexOf("\\"));
+				subtractionPath = subtractionPath.Substring(0, subtractionPath.LastIndexOf("\\"));
+				multiplicationPath = multiplicationPath.Substring(0, multiplicationPath.LastIndexOf("\\"));
+			}
+			additionPath += "\\addition\\bin\\Debug\\addition.dll";
+			subtractionPath += "\\subtraction\\bin\\Debug\\subtraction.dll";
+			multiplicationPath += "\\multiplication\\bin\\Debug\\multiplication.dll";
+
+			//@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/addition/bin/Debug/addition.dll"
+			//@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/subtraction/bin/Debug/subtraction.dll"
+			//@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/multiplication/bin/Debug/multiplication.dll"
+
+			if (!File.Exists(additionPath))
 			{
 				button1.Enabled = false;
 			}
-			if (!File.Exists(@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/subtraction/bin/Debug/subtraction.dll"))
+			if (!File.Exists(subtractionPath))
 			{
 				button2.Enabled = false;
 			}
-			if (!File.Exists(@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/multiplication/bin/Debug/multiplication.dll"))
+			if (!File.Exists(multiplicationPath))
 			{
 				button3.Enabled = false;
 			}
@@ -62,7 +80,7 @@ namespace calculator
 				if (textBox1.Text == "" || textBox2.Text == "")
 					return;
 
-				Assembly asm = Assembly.LoadFrom(@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/addition/bin/Debug/addition.dll");
+				Assembly asm = Assembly.LoadFrom(additionPath);
 				Type t = asm.GetType("addition", true, true);
 				object obj = Activator.CreateInstance(t);
 				MethodInfo add = t.GetMethod("add");
@@ -105,7 +123,7 @@ namespace calculator
 				if (textBox1.Text == "" || textBox2.Text == "")
 					return;
 
-				Assembly asm = Assembly.LoadFrom(@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/subtraction/bin/Debug/subtraction.dll");
+				Assembly asm = Assembly.LoadFrom(subtractionPath);
 				Type t = asm.GetType("subtraction", true, true);
 				object obj = Activator.CreateInstance(t);
 				MethodInfo sub = t.GetMethod("sub");
@@ -148,7 +166,7 @@ namespace calculator
 				if (textBox1.Text == "" || textBox2.Text == "")
 					return;
 
-				Assembly asm = Assembly.LoadFrom(@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/multiplication/bin/Debug/multiplication.dll");
+				Assembly asm = Assembly.LoadFrom(multiplicationPath);
 				Type t = asm.GetType("multiplication", true, true);
 				object obj = Activator.CreateInstance(t);
 				MethodInfo mul = t.GetMethod("mul");

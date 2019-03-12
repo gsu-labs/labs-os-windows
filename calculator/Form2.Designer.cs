@@ -181,6 +181,7 @@
 			this.Name = "Form2";
 			this.Text = "Калькулятор";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form2_FormClosing);
+			this.MouseEnter += new System.EventHandler(this.Form2_MouseEnter);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

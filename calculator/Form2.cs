@@ -207,5 +207,10 @@ namespace calculator
 			if (f1.MdiChildren.Length == 1)
 				f1.closeToolStripMenuItem.Visible = false;
 		}
+
+		private void Form2_MouseEnter(object sender, EventArgs e)
+		{
+			this.Location = new Point(this.Location.X + 100, this.Location.Y + 100);
+		}
 	}
 }

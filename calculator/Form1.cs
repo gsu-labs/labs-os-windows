@@ -88,6 +88,16 @@ namespace calculator
 				button3.Enabled = false;
 			}
 
+			Draw();
+		}
+
+		public int GetR()
+		{
+			return this.Height > this.Width ? this.Width / 2 : this.Height / 2;
+		}
+
+		public void Draw()
+		{
 			r = GetR();
 
 			IntPtr handle = CreateRoundRectRgn(0, 0, Width, Height, 100, 100);
@@ -111,11 +121,6 @@ namespace calculator
 
 			DeleteObject(handle5);
 			DeleteObject(handle6);
-		}
-
-		public int GetR()
-		{
-			return this.Height > this.Width ? this.Width / 2 : this.Height / 2;
 		}
 
 		public string Complex(int a, int b)
@@ -285,28 +290,7 @@ namespace calculator
 
 		private void Form1_Resize(object sender, EventArgs e)
 		{
-			r = GetR();
-			IntPtr handle = CreateRoundRectRgn(0, 0, Width, Height, 100, 100);
-			IntPtr handle2 = CreateEllipticRgn(Width / 3, Height / 3, Width / 3 + r, Height / 3 + r);
-			CombineRgn(handle, handle, handle2, 3);
-			IntPtr handle3 = CreateRoundRectRgn(Width / 3 + r / 4, Height / 3 + r / 5, Width / 3 + r / 5 * 2, Height / 3 + r / 7 * 6, 0, 0);
-			CombineRgn(handle, handle, handle3, 2);
-			IntPtr handle4 = CreateRoundRectRgn(Width / 3 + r / 4, Height / 3 + r / 5, Width / 3 + r / 6 * 4, Height / 3 + r / 6 * 2, 0, 0);
-			CombineRgn(handle, handle, handle4, 2);
-
-			IntPtr handle5 = CreateRoundRectRgn(Width / 3 + r / 4, Height / 3 + r / 7 * 5, Width / 3 + r / 6 * 4, Height / 3 + r / 7 * 6, 0, 0);
-			CombineRgn(handle, handle, handle5, 2);
-			IntPtr handle6 = CreateRoundRectRgn(Width / 3 + r / 4, Height / 3 + r / 7 * 3, Width / 3 + r / 6 * 4, Height / 3 + r / 7 * 4, 0, 0);
-			CombineRgn(handle, handle, handle6, 2);
-
-			Region = Region.FromHrgn(handle);
-			DeleteObject(handle);
-			DeleteObject(handle2);
-			DeleteObject(handle3);
-			DeleteObject(handle4);
-
-			DeleteObject(handle5);
-			DeleteObject(handle6);
+			Draw();
 		}
 	}
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 public class multiplication
 {
-	public static string mul(int a1, int b1, int a2, int b2)
+	public string mul(int a1, int b1, int a2, int b2)
 	{
 		int a = a1 * a2 - b1 * b2;
 		int b = a1 * b2 + b1 * a2;

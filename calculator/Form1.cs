@@ -9,14 +9,25 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace calculator
 {
 	public partial class Form1 : Form
 	{
-		string additionPath = Directory.GetCurrentDirectory();
-		string subtractionPath = Directory.GetCurrentDirectory();
-		string multiplicationPath = Directory.GetCurrentDirectory();
+		[DllImport("User32.dll")]
+		public static extern IntPtr GetWindow(IntPtr hndl, uint k);
+		[DllImport("Shell32.dll")]
+		public static extern IntPtr ShellExecuteA(IntPtr hwnd, string lpOperation, string lpFile, string lpParameters, string lpDirecotry, int nShowCmd);
+
+		[DllImport("Kernel32.dll")]
+		public static extern bool GetExitCodeProcess(IntPtr hwnd, out uint ExitCode);
+
+		string PathInput = Directory.GetCurrentDirectory();
+		string PathOutput = Directory.GetCurrentDirectory();
+
+		string ClacPath = Directory.GetCurrentDirectory();
 
 		public Form1()
 		{
@@ -24,30 +35,14 @@ namespace calculator
 
 			for (int i = 0; i < 3; i++)
 			{
-				additionPath = additionPath.Substring(0, additionPath.LastIndexOf("\\"));
-				subtractionPath = subtractionPath.Substring(0, subtractionPath.LastIndexOf("\\"));
-				multiplicationPath = multiplicationPath.Substring(0, multiplicationPath.LastIndexOf("\\"));
+				PathInput = PathInput.Substring(0, PathInput.LastIndexOf("\\"));
+				PathOutput = PathOutput.Substring(0, PathOutput.LastIndexOf("\\"));
+				ClacPath = ClacPath.Substring(0, ClacPath.LastIndexOf("\\"));
 			}
-			additionPath += "\\addition\\bin\\Debug\\addition.dll";
-			subtractionPath += "\\subtraction\\bin\\Debug\\subtraction.dll";
-			multiplicationPath += "\\multiplication\\bin\\Debug\\multiplication.dll";
 
-			//@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/addition/bin/Debug/addition.dll"
-			//@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/subtraction/bin/Debug/subtraction.dll"
-			//@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/multiplication/bin/Debug/multiplication.dll"
-
-			if (!File.Exists(additionPath))
-			{
-				button1.Enabled = false;
-			}
-			if (!File.Exists(subtractionPath))
-			{
-				button2.Enabled = false;
-			}
-			if (!File.Exists(multiplicationPath))
-			{
-				button3.Enabled = false;
-			}
+			PathInput += "\\input.txt";
+			PathOutput += "\\output.txt";
+			ClacPath += "\\calculatorX\\bin\\Debug\\calculatorX.exe";
 		}
 
 		public string Complex(int a, int b)
@@ -70,47 +65,95 @@ namespace calculator
 			}
 		}
 
+		public void GetComplex()
+		{
+			if (textBox1.Text == "" || textBox2.Text == "" ||
+				textBox3.Text == "" || textBox4.Text == "")
+				return;
+
+			string request = "";
+			request = textBox1.Text + " " + textBox2.Text + " " + textBox3.Text + " " + textBox4.Text;
+			request += " " + label1.Text;
+
+			using (StreamWriter sw = new StreamWriter(PathInput, false, Encoding.Default))
+			{
+				sw.Write(request);
+			}
+
+			uint arg = 2;
+
+			if (radioButton1.Checked)
+				ShellExecuteA(this.Handle, "open", @"D:\ОС\labs\Lab4_os\Console\Console\bin\Debug\Console.exe", null, null, 1);
+			else
+				ShellExecuteA(this.Handle, "open", @"D:\ОС\labs\Lab4_os\Console\Console\bin\Debug\Console.exe", null, null, 0);
+
+			int process = 0;
+			Process[] pp = Process.GetProcesses();
+			for (int i = 0; i < pp.Length; i++)
+				if (pp[i].ProcessName == "Console")
+				{
+					process = i;
+					break;
+				}
+
+			while (arg <= 259 && arg != 0)
+			{
+				GetExitCodeProcess(pp[process].Handle, out arg);
+			}
+
+			StreamReader sr = new StreamReader(PathOutput, Encoding.Default);
+			string answer = sr.ReadToEnd();
+			sr.Close();
+			sr.Dispose();
+
+			label3.Text = answer;
+		}
+
 		private void button1_Click(object sender, EventArgs e)
 		{
-			button1.Enabled = true;
-			button2.Enabled = true;
-			button3.Enabled = true;
-			try
-			{
-				if (textBox1.Text == "" || textBox2.Text == "")
-					return;
+			label1.Text = "+";
+			GetComplex();
 
-				Assembly asm = Assembly.LoadFrom(additionPath);
-				Type t = asm.GetType("addition", true, true);
-				object obj = Activator.CreateInstance(t);
-				MethodInfo add = t.GetMethod("add");
-				Object res;
+			//button1.Enabled = true;
+			//button2.Enabled = true;
+			//button3.Enabled = true;
+			//try
+			//{
+			//	if (textBox1.Text == "" || textBox2.Text == "" ||
+			//		textBox3.Text == "" || textBox4.Text == "")
+			//		return;
 
-				MethodInfo purpose = t.GetMethod("purpose");
-				Object purp;
+			//	Assembly asm = Assembly.LoadFrom(additionPath);
+			//	Type t = asm.GetType("addition", true, true);
+			//	object obj = Activator.CreateInstance(t);
+			//	MethodInfo add = t.GetMethod("add");
+			//	Object res;
 
-				int a1 = int.Parse(textBox1.Text);
-				int b1 = int.Parse(textBox2.Text);
-				int a2 = int.Parse(textBox3.Text);
-				int b2 = int.Parse(textBox4.Text);
+			//	MethodInfo purpose = t.GetMethod("purpose");
+			//	Object purp;
 
-				label4.Text = Complex(a1, b1);
-				label5.Text = Complex(a2, b2);
-				label1.Text = "+";
+			//	int a1 = int.Parse(textBox1.Text);
+			//	int b1 = int.Parse(textBox2.Text);
+			//	int a2 = int.Parse(textBox3.Text);
+			//	int b2 = int.Parse(textBox4.Text);
 
-				purp = purpose.Invoke(obj, new object[] { });
-				label6.Visible = true;
-				label6.Text = purp.ToString();
+			//	label4.Text = Complex(a1, b1);
+			//	label5.Text = Complex(a2, b2);
+			//	label1.Text = "+";
 
-				res = add.Invoke(obj, new object[] { a1, b1, a2, b2 });
-				label3.Text = res.ToString();
-			}
-			catch (Exception ex)
-			{
-				label6.Visible = false;
-				button1.Enabled = false;
-				MessageBox.Show("Could not load DLL with addition function or input error");
-			}
+			//	purp = purpose.Invoke(obj, new object[] { });
+			//	label6.Visible = true;
+			//	label6.Text = purp.ToString();
+
+			//	res = add.Invoke(obj, new object[] { a1, b1, a2, b2 });
+			//	label3.Text = res.ToString();
+			//}
+			//catch (Exception ex)
+			//{
+			//	label6.Visible = false;
+			//	button1.Enabled = false;
+			//	MessageBox.Show("Could not load DLL with addition function or input error");
+			//}
 		}
 
 		private void button2_Click(object sender, EventArgs e)
@@ -120,7 +163,8 @@ namespace calculator
 			button3.Enabled = true;
 			try
 			{
-				if (textBox1.Text == "" || textBox2.Text == "")
+				if (textBox1.Text == "" || textBox2.Text == "" ||
+					textBox3.Text == "" || textBox4.Text == "")
 					return;
 
 				Assembly asm = Assembly.LoadFrom(subtractionPath);
@@ -163,7 +207,8 @@ namespace calculator
 			button3.Enabled = true;
 			try
 			{
-				if (textBox1.Text == "" || textBox2.Text == "")
+				if (textBox1.Text == "" || textBox2.Text == "" ||
+					textBox3.Text == "" || textBox4.Text == "")
 					return;
 
 				Assembly asm = Assembly.LoadFrom(multiplicationPath);

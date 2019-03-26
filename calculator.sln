@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "subtraction", "subtraction\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "multiplication", "multiplication\multiplication.csproj", "{AD356FCE-0EAB-40BB-B732-F2CC8805949D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "calculatorX", "calculatorX\calculatorX.csproj", "{FE0DCB55-4D03-4701-8854-115C284EFA71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{AD356FCE-0EAB-40BB-B732-F2CC8805949D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD356FCE-0EAB-40BB-B732-F2CC8805949D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD356FCE-0EAB-40BB-B732-F2CC8805949D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE0DCB55-4D03-4701-8854-115C284EFA71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE0DCB55-4D03-4701-8854-115C284EFA71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE0DCB55-4D03-4701-8854-115C284EFA71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE0DCB55-4D03-4701-8854-115C284EFA71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

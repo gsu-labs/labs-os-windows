@@ -71,6 +71,7 @@ namespace calculatorX
 					multiplication mulx = new multiplication();
 					str += mulx.mul(int.Parse(words[0]), int.Parse(words[1]), int.Parse(words[2]), int.Parse(words[3]));
 				}
+				str += " " + DateTime.Now.ToString("dd/MM/yyyy");
 				sw.Write(str);
 			}
 		}

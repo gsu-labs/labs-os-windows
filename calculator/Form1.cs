@@ -89,27 +89,25 @@ namespace calculator
 			label3.Text = words[2];
 			label4.Text = words[0];
 			label5.Text = words[1];
+			label6.Text = words[3];
 			label6.Visible = true;
 		}
 
 		private void button1_Click(object sender, EventArgs e)
 		{
 			label1.Text = "+";
-			label6.Text = button1.Text;
 			ComplexCalculator();
 		}
 
 		private void button2_Click(object sender, EventArgs e)
 		{
 			label1.Text = "-";
-			label6.Text = button2.Text;
 			ComplexCalculator();
 		}
 
 		private void button3_Click(object sender, EventArgs e)
 		{
 			label1.Text = "*";
-			label6.Text = button3.Text;
 			ComplexCalculator();
 		}
 	}

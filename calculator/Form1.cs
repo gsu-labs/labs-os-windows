@@ -9,45 +9,45 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace calculator
 {
 	public partial class Form1 : Form
 	{
-		string additionPath = Directory.GetCurrentDirectory();
-		string subtractionPath = Directory.GetCurrentDirectory();
-		string multiplicationPath = Directory.GetCurrentDirectory();
+		bool isRunning = true;
+
+		[DllImport("kernel32.dll")]
+		static extern IntPtr CreateThread(uint lpThreadAttributes, uint StackSize, ThreadStart StartFunction, uint ThreadParameter, uint CreationFags, out uint Threadld);
+
+		[DllImport("kernel32.dll")]
+		static extern bool SetThreadPriority(IntPtr hThread, int nPriority);
+
+		[DllImport("kernel32.dll")]
+		static extern bool CloseHandle(IntPtr hndl);
+
+		[DllImport("kernel32.dll")]
+		static extern bool SuspendThread(IntPtr hndl);
+
+		[DllImport("kernel32.dll")]
+		static extern bool GetExitCodeThread(IntPtr hThread, out uint lpExitCode);
+
+		[DllImport("kernel32.dll")]
+		static extern void ExitThread(uint dwExitCode);
+
+		int first = 0;
+		int second = 0;
+		int third = 0;
+
+		Thread t;
+		IntPtr p1;
+		IntPtr p2;
+		IntPtr p3;
 
 		public Form1()
 		{
 			InitializeComponent();
-
-			for (int i = 0; i < 3; i++)
-			{
-				additionPath = additionPath.Substring(0, additionPath.LastIndexOf("\\"));
-				subtractionPath = subtractionPath.Substring(0, subtractionPath.LastIndexOf("\\"));
-				multiplicationPath = multiplicationPath.Substring(0, multiplicationPath.LastIndexOf("\\"));
-			}
-			additionPath += "\\addition\\bin\\Debug\\addition.dll";
-			subtractionPath += "\\subtraction\\bin\\Debug\\subtraction.dll";
-			multiplicationPath += "\\multiplication\\bin\\Debug\\multiplication.dll";
-
-			//@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/addition/bin/Debug/addition.dll"
-			//@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/subtraction/bin/Debug/subtraction.dll"
-			//@"C:/Users/Ikon/Desktop/Work/OS&SP/labs/multiplication/bin/Debug/multiplication.dll"
-
-			if (!File.Exists(additionPath))
-			{
-				button1.Enabled = false;
-			}
-			if (!File.Exists(subtractionPath))
-			{
-				button2.Enabled = false;
-			}
-			if (!File.Exists(multiplicationPath))
-			{
-				button3.Enabled = false;
-			}
 		}
 
 		public string Complex(int a, int b)
@@ -70,132 +70,106 @@ namespace calculator
 			}
 		}
 
+		void F1()
+		{
+			while (true)
+			{
+				addition add = new addition();
+				add.add(0,0,0,0);
+				first++;
+			}
+		}
+
+		void F2()
+		{
+			while (true)
+			{
+				subtraction sub = new subtraction();
+				sub.sub(0,0,0,0);
+				second++;
+			}
+		}
+
+		void F3()
+		{
+			while (true)
+			{
+				multiplication mul = new multiplication();
+				mul.mul(0,0,0,0);
+				third++;
+			}
+		}
+
+		void thrd()
+		{
+			while (true)
+			{
+				Thread.Sleep(1000);
+				label5.Invoke(new Action(() => label5.Text = first.ToString()));
+				label6.Invoke(new Action(() => label6.Text = second.ToString()));
+				label7.Invoke(new Action(() => label7.Text = third.ToString()));
+				first = 0;
+				second = 0;
+				third = 0;
+			}
+		}
+
 		private void button1_Click(object sender, EventArgs e)
 		{
-			button1.Enabled = true;
-			button2.Enabled = true;
-			button3.Enabled = true;
-			try
-			{
-				if (textBox1.Text == "" || textBox2.Text == "")
-					return;
-
-				Assembly asm = Assembly.LoadFrom(additionPath);
-				Type t = asm.GetType("addition", true, true);
-				object obj = Activator.CreateInstance(t);
-				MethodInfo add = t.GetMethod("add");
-				Object res;
-
-				MethodInfo purpose = t.GetMethod("purpose");
-				Object purp;
-
-				int a1 = int.Parse(textBox1.Text);
-				int b1 = int.Parse(textBox2.Text);
-				int a2 = int.Parse(textBox3.Text);
-				int b2 = int.Parse(textBox4.Text);
-
-				label4.Text = Complex(a1, b1);
-				label5.Text = Complex(a2, b2);
-				label1.Text = "+";
-
-				purp = purpose.Invoke(obj, new object[] { });
-				label6.Visible = true;
-				label6.Text = purp.ToString();
-
-				res = add.Invoke(obj, new object[] { a1, b1, a2, b2 });
-				label3.Text = res.ToString();
-			}
-			catch (Exception ex)
-			{
-				label6.Visible = false;
-				button1.Enabled = false;
-				MessageBox.Show("Could not load DLL with addition function or input error");
-			}
+			uint threadID1;
+			uint threadID2;
+			uint threadID3;
+			ThreadStart threadStart = thrd;
+			p1 = CreateThread(0, 0, F1, 0, 0, out threadID1);
+			p2 = CreateThread(0, 0, F2, 0, 0, out threadID2);
+			p3 = CreateThread(0, 0, F3, 0, 0, out threadID3);
+			t = new Thread(threadStart);
+			t.Start();
+			button1.Enabled = false;
 		}
 
 		private void button2_Click(object sender, EventArgs e)
 		{
-			button1.Enabled = true;
-			button2.Enabled = true;
-			button3.Enabled = true;
-			try
+			if (isRunning)
 			{
-				if (textBox1.Text == "" || textBox2.Text == "")
-					return;
-
-				Assembly asm = Assembly.LoadFrom(subtractionPath);
-				Type t = asm.GetType("subtraction", true, true);
-				object obj = Activator.CreateInstance(t);
-				MethodInfo sub = t.GetMethod("sub");
-				Object res;
-
-				MethodInfo purpose = t.GetMethod("purpose");
-				Object purp;
-
-				int a1 = int.Parse(textBox1.Text);
-				int b1 = int.Parse(textBox2.Text);
-				int a2 = int.Parse(textBox3.Text);
-				int b2 = int.Parse(textBox4.Text);
-
-				label4.Text = Complex(a1, b1);
-				label5.Text = Complex(a2, b2);
-				label1.Text = "-";
-
-				purp = purpose.Invoke(obj, new object[] { });
-				label6.Visible = true;
-				label6.Text = purp.ToString();
-
-				res = sub.Invoke(obj, new object[] { a1, b1, a2, b2 });
-				label3.Text = res.ToString();
+				t.Suspend();
+				isRunning = false;
+				button2.Text = "RESUME";
 			}
-			catch (Exception ex)
+			else
 			{
-				label6.Visible = false;
-				button2.Enabled = false;
-				MessageBox.Show("Could not load DLL with subtraction function or input error");
+				first = 0;
+				second = 0;
+				third = 0;
+				t.Resume();
+				isRunning = true;
+				button2.Text = "STOP";
 			}
 		}
 
-		private void button3_Click(object sender, EventArgs e)
+		private void trackBar1_Scroll(object sender, EventArgs e)
 		{
-			button1.Enabled = true;
-			button2.Enabled = true;
-			button3.Enabled = true;
-			try
+			SetThreadPriority(p1, trackBar1.Value);
+		}
+
+		private void trackBar2_Scroll(object sender, EventArgs e)
+		{
+			SetThreadPriority(p2, trackBar2.Value);
+		}
+
+		private void trackBar3_Scroll(object sender, EventArgs e)
+		{
+			SetThreadPriority(p3, trackBar3.Value);
+		}
+
+		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			if (isRunning)
+				t.Abort();
+			else
 			{
-				if (textBox1.Text == "" || textBox2.Text == "")
-					return;
-
-				Assembly asm = Assembly.LoadFrom(multiplicationPath);
-				Type t = asm.GetType("multiplication", true, true);
-				object obj = Activator.CreateInstance(t);
-				MethodInfo mul = t.GetMethod("mul");
-				Object res;
-
-				MethodInfo purpose = t.GetMethod("purpose");
-				Object purp;
-
-				int a1 = int.Parse(textBox1.Text);
-				int b1 = int.Parse(textBox2.Text);
-				int a2 = int.Parse(textBox3.Text);
-				int b2 = int.Parse(textBox4.Text);
-
-				label4.Text = Complex(a1, b1);
-				label5.Text = Complex(a2, b2);
-				label1.Text = "*";
-
-				purp = purpose.Invoke(obj, new object[] { });
-				label6.Visible = true;
-				label6.Text = purp.ToString();
-
-				res = mul.Invoke(obj, new object[] { a1, b1, a2, b2 });
-				label3.Text = res.ToString();
-			}
-			catch (Exception ex)
-			{
-				label6.Visible = false;
-				button3.Enabled = false;
-				MessageBox.Show("Could not load DLL with multiplication function or input error");
+				t.Resume();
+				t.Abort();
 			}
 		}
 	}

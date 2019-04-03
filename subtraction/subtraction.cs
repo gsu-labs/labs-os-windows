@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 public class subtraction
 {
-	public static string sub(int a1, int b1, int a2, int b2)
+	public string sub(int a1, int b1, int a2, int b2)
 	{
 		int a = a1 - a2;
 		int b = b1 - b2;

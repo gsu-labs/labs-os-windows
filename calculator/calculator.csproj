@@ -79,5 +79,19 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\addition\addition.csproj">
+      <Project>{faaeaeda-762d-4081-9773-eae203ac2c0f}</Project>
+      <Name>addition</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\multiplication\multiplication.csproj">
+      <Project>{ad356fce-0eab-40bb-b732-f2cc8805949d}</Project>
+      <Name>multiplication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\subtraction\subtraction.csproj">
+      <Project>{f8127d52-b405-442a-afcd-1a2ba39e61b8}</Project>
+      <Name>subtraction</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

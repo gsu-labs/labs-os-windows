@@ -16,25 +16,16 @@ namespace calculator
 {
 	public partial class Form1 : Form
 	{
+		object lockObj = new object();
+		int i = 0, itemsCount = 0, sleepTime = 0, sleepTime2 = 0;
+		const int sizeOfStack = 6;
+		Thread t1;
+		Thread t2;
+		Thread t3;
+		Semaphore s = new Semaphore(1, 1);
+		Semaphore s2 = new Semaphore(sizeOfStack, sizeOfStack);
+
 		bool isRunning = true;
-
-		[DllImport("kernel32.dll")]
-		static extern IntPtr CreateThread(uint lpThreadAttributes, uint StackSize, ThreadStart StartFunction, uint ThreadParameter, uint CreationFags, out uint Threadld);
-
-		[DllImport("kernel32.dll")]
-		static extern bool SetThreadPriority(IntPtr hThread, int nPriority);
-
-		[DllImport("kernel32.dll")]
-		static extern bool CloseHandle(IntPtr hndl);
-
-		[DllImport("kernel32.dll")]
-		static extern bool SuspendThread(IntPtr hndl);
-
-		[DllImport("kernel32.dll")]
-		static extern bool GetExitCodeThread(IntPtr hThread, out uint lpExitCode);
-
-		[DllImport("kernel32.dll")]
-		static extern void ExitThread(uint dwExitCode);
 
 		int first = 0;
 		int second = 0;
@@ -90,16 +81,6 @@ namespace calculator
 			}
 		}
 
-		void F3()
-		{
-			while (true)
-			{
-				multiplication mul = new multiplication();
-				mul.mul(0,0,0,0);
-				third++;
-			}
-		}
-
 		void thrd()
 		{
 			while (true)
@@ -152,25 +133,50 @@ namespace calculator
 			SetThreadPriority(p1, trackBar1.Value);
 		}
 
+		private void Form1_Load(object sender, EventArgs e)
+		{
+			bool ex = false;
+			Mutex m = new Mutex(true, "mutexName", out ex);
+			if (!ex)
+			{
+				MessageBox.Show("The app is running!");
+				this.Close();
+			}
+			dataGridView2.RowCount = sizeOfStack;
+		}
+
 		private void trackBar2_Scroll(object sender, EventArgs e)
 		{
 			SetThreadPriority(p2, trackBar2.Value);
 		}
 
-		private void trackBar3_Scroll(object sender, EventArgs e)
-		{
-			SetThreadPriority(p3, trackBar3.Value);
-		}
-
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			if (isRunning)
-				t.Abort();
-			else
+			//if (isRunning)
+			//	t.Abort();
+			//else
+			//{
+			//	t.Resume();
+			//	t.Abort();
+			//}
+			try
 			{
-				t.Resume();
-				t.Abort();
+				t1.Abort();
 			}
+			catch (Exception)
+			{ }
+			try
+			{
+				t2.Abort();
+			}
+			catch (Exception)
+			{ }
+			try
+			{
+				t3.Abort();
+			}
+			catch (Exception)
+			{ }
 		}
 	}
 }

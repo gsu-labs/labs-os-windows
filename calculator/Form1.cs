@@ -9,11 +9,126 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Threading;
+using System.Runtime.InteropServices;
 
 namespace calculator
 {
 	public partial class Form1 : Form
 	{
+		Thread t;
+		Thread t2;
+		bool noExit = true;
+		const int MAX = 256;
+		StringBuilder volname = new StringBuilder(MAX);
+		int sn;
+		int maxcomplen;
+		int sysflags;
+		uint len = 0;
+		StringBuilder sysname = new StringBuilder(MAX);
+		SYSTEMTIME d = new SYSTEMTIME();
+		NativeOverlapped natOverLap = new NativeOverlapped();
+		IntPtr p;
+		IntPtr[] pp = new IntPtr[3];
+
+		[DllImport("kernel32.dll", EntryPoint = "WaitForMultipleObjects", SetLastError = true)]
+		static extern int WaitForMultipleObjects(UInt32 nCount, IntPtr[] lpHandles, Boolean fWaitAll, int dwMilliseconds);
+
+		[DllImport("kernel32.dll")]
+		static extern IntPtr FindFirstChangeNotification(string lpPathName, bool bWatchSubtree, uint dwNotifyFilter);
+
+		[DllImport("kernel32.dll", SetLastError = true)]
+		static extern int FindNextChangeNotification(IntPtr hChangeHandle);
+
+		[DllImport("kernel32.dll", SetLastError = true)]
+		static extern int FindCloseChangeNotification(IntPtr hChangeHandle);
+
+		[DllImport("kernel32.dll")]
+		static extern bool WriteFile(IntPtr hFile, byte[] lpBuffer, int nNumberOfBytesToWrite, out uint lpNumberOfBytesWritten, [In] ref System.Threading.NativeOverlapped lpOverlapped);
+
+		[DllImport("kernel32", CharSet = CharSet.Auto, SetLastError = true)]
+		private static extern IntPtr FindFirstFile(string lpFileName, out WIN32_FIND_DATA lpFindFileData);
+
+		[DllImport("kernel32", CharSet = CharSet.Auto, SetLastError = true)]
+		private static extern bool FindNextFile(IntPtr hFindFile, out WIN32_FIND_DATA lpFindFileData);
+
+		[DllImport("kernel32.dll", SetLastError = true)]
+		private static extern bool FindClose(IntPtr hFindFile);
+		private static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
+
+		[DllImport("kernel32.dll")]
+		static extern uint SetFilePointerEx(IntPtr hFile, long liDistanceToMove, out uint lpNewFilePointer, [In] EMoveMethod dwMoveMethod);
+		public enum EMoveMethod : uint
+		{
+			Begin = 0,
+			Current = 1,
+			End = 2
+		}
+
+		private const int MAX_PATH = 260;
+
+		[Serializable]
+		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+		[BestFitMapping(false)]
+		private struct WIN32_FIND_DATA
+		{
+			public FileAttributes dwFileAttributes;
+			public FILETIME ftCreationTime;
+			public FILETIME ftLastAccessTime;
+			public FILETIME ftLastWriteTime;
+			public int nFileSizeHigh;
+			public int nFileSizeLow;
+			public int dwReserved0;
+			public int dwReserved1;
+			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_PATH)]
+			public string cFileName;
+			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 14)]
+			public string cAlternate;
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		private struct SYSTEMTIME
+		{
+			[MarshalAs(UnmanagedType.U2)] public short Year;
+			[MarshalAs(UnmanagedType.U2)] public short Month;
+			[MarshalAs(UnmanagedType.U2)] public short DayOfWeek;
+			[MarshalAs(UnmanagedType.U2)] public short Day;
+			[MarshalAs(UnmanagedType.U2)] public short Hour;
+			[MarshalAs(UnmanagedType.U2)] public short Minute;
+			[MarshalAs(UnmanagedType.U2)] public short Second;
+			[MarshalAs(UnmanagedType.U2)] public short Milliseconds;
+		}
+
+		[DllImport("Kernel32.dll")]
+		public static extern bool CloseHandle(IntPtr hndl);
+
+		[DllImport("Kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+		public static extern IntPtr CreateFileW(
+		[MarshalAs(UnmanagedType.LPWStr)] string filename,
+		[MarshalAs(UnmanagedType.U4)] FileAccess access,
+		[MarshalAs(UnmanagedType.U4)] FileShare share,
+		IntPtr securityAttributes,
+		[MarshalAs(UnmanagedType.U4)] FileMode creationDisposition,
+		[MarshalAs(UnmanagedType.U4)] FileAttributes flagAndAttributes,
+		IntPtr templateFile);
+
+		[DllImport("kernel32.dll")]
+		static extern void GetLocalTime(ref SYSTEMTIME t);
+
+		[DllImport("kernel32.dll")]
+		public static extern int GetVolumeInformation(
+			string strPath,
+			StringBuilder strVolumeNameBuffer,
+			int lngVolumeNameSize,
+			out int lngVolumeSerialNumber,
+			out int lngMaximumComponentLength,
+			out int lngFileSystemFlags,
+			StringBuilder strFileSystemNameBuffer,
+			int lngFileSystemBameSize);
+
+		/// <summary>
+		/// /////////////////////////////////////////////////////////
+		/// </summary>
 		string additionPath = Directory.GetCurrentDirectory();
 		string subtractionPath = Directory.GetCurrentDirectory();
 		string multiplicationPath = Directory.GetCurrentDirectory();
@@ -111,6 +226,29 @@ namespace calculator
 				button1.Enabled = false;
 				MessageBox.Show("Could not load DLL with addition function or input error");
 			}
+
+			try
+			{
+				p = CreateFileW("C:\\Windows\\Temp\\Lab7File.txt", FileAccess.Write, FileShare.ReadWrite, IntPtr.Zero, FileMode.OpenOrCreate, FileAttributes.Normal, IntPtr.Zero);
+				uint a = 0;
+				SetFilePointerEx(p, 0, out a, EMoveMethod.End);
+				natOverLap.OffsetLow = (int)a;
+
+				Assembly asm = Assembly.LoadFrom("Dll/ClassLibrary1.dll");
+				Type t = asm.GetType("Reverse", true, true);
+				object obj = Activator.CreateInstance(t);
+				MethodInfo met = t.GetMethod("TextReverse");
+				Object res = met.Invoke(obj, new object[] { rb1.Text });
+
+				rb2.Text = res.ToString();
+				byte[] b = Encoding.Default.GetBytes(res.ToString() + "\n");
+				WriteFile(p, b, b.Length, out len, ref natOverLap);
+				CloseHandle(p);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Не удалось загрузить библиотеку ClassLibrary1" + ex.Message);
+			}
 		}
 
 		private void button2_Click(object sender, EventArgs e)
@@ -154,6 +292,27 @@ namespace calculator
 				button2.Enabled = false;
 				MessageBox.Show("Could not load DLL with subtraction function or input error");
 			}
+
+			try
+			{
+				p = CreateFileW("C:\\Windows\\Temp\\Lab7File.txt", FileAccess.Write, FileShare.ReadWrite, IntPtr.Zero, FileMode.OpenOrCreate, FileAttributes.Normal, IntPtr.Zero);
+				uint a = 0;
+				SetFilePointerEx(p, 0, out a, EMoveMethod.End);
+				natOverLap.OffsetLow = (int)a;
+				Assembly asm = Assembly.LoadFrom("Dll/dll3.dll");
+				Type t = asm.GetType("Translit", true, true);
+				object obj = Activator.CreateInstance(t);
+				MethodInfo met = t.GetMethod("TranslitFunc");
+				Object res = met.Invoke(obj, new object[] { rb1.Text });
+				rb2.Text = res.ToString();
+				byte[] b = Encoding.Default.GetBytes(res.ToString() + "\n");
+				WriteFile(p, b, b.Length, out len, ref natOverLap);
+				CloseHandle(p);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Не удалось загрузить библиотеку dll3" + ex.Message);
+			}
 		}
 
 		private void button3_Click(object sender, EventArgs e)
@@ -196,6 +355,93 @@ namespace calculator
 				label6.Visible = false;
 				button3.Enabled = false;
 				MessageBox.Show("Could not load DLL with multiplication function or input error");
+			}
+
+			try
+			{
+				p = CreateFileW("C:\\Windows\\Temp\\Lab7File.txt", FileAccess.Write, FileShare.ReadWrite, IntPtr.Zero, FileMode.OpenOrCreate, FileAttributes.Normal, IntPtr.Zero);
+				uint a = 0;
+				SetFilePointerEx(p, 0, out a, EMoveMethod.End);
+				natOverLap.OffsetLow = (int)a;
+				Assembly asm = Assembly.LoadFrom("Dll/dll2.dll");
+				Type t = asm.GetType("ToLower", true, true);
+				object obj = Activator.CreateInstance(t);
+				MethodInfo met = t.GetMethod("ToLowerCase");
+				Object res = met.Invoke(obj, new object[] { rb1.Text });
+				rb2.Text = res.ToString();
+				byte[] b = Encoding.Default.GetBytes(res.ToString() + "\n");
+				WriteFile(p, b, b.Length, out len, ref natOverLap);
+				CloseHandle(p);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Не удалось загрузить библиотеку dll2" + ex.Message);
+			}
+		}
+
+		private void Form1_Load(object sender, EventArgs e)
+		{
+			t = new Thread(new ThreadStart(thrd));
+			t.Start();
+			prinntToDataGridView();
+			t2 = new Thread(new ThreadStart(w8ForChanges));
+			t2.Start();
+		}
+
+		void thrd()
+		{
+			while (true)
+			{
+				Thread.Sleep(1000);
+				GetVolumeInformation(@"C:\", volname, MAX, out sn, out maxcomplen, out sysflags, sysname, MAX);
+				GetLocalTime(ref d);
+				this.Invoke(new Action(() => this.Text = $"{d.Hour}:{d.Minute}:{d.Second}" + " " + volname.ToString() + sn.ToString() + sysname.ToString()));
+			}
+		}
+
+		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			noExit = false;
+			t.Abort();
+			FindCloseChangeNotification(pp[0]);
+			FindCloseChangeNotification(pp[1]);
+			FindCloseChangeNotification(pp[2]);
+		}
+
+		void prinntToDataGridView()
+		{
+			WIN32_FIND_DATA findData;
+			IntPtr findHandle = FindFirstFile("C:\\Windows\\Temp\\*", out findData);
+
+			int items = 0;
+			try
+			{
+				while (FindNextFile(findHandle, out findData))
+				{
+					dataGridView1.Invoke(new Action(() => dataGridView1.RowCount = items + 2));
+					dataGridView1.Invoke(new Action(() => dataGridView1.Rows[items].Cells[0].Value = findData.cFileName));
+					dataGridView1.Invoke(new Action(() => dataGridView1.Rows[items++].Cells[1].Value = findData.nFileSizeLow / 1024 + "." + findData.nFileSizeLow % 1024));
+				}
+			}
+			catch (Exception) { }
+			finally
+			{
+				FindClose(findHandle);
+			}
+		}
+
+		void w8ForChanges()
+		{
+			pp[0] = FindFirstChangeNotification("C:\\Windows\\Temp", false, 0x00000001);
+			pp[1] = FindFirstChangeNotification("C:\\Windows\\Temp", false, 0x00000008);
+			pp[2] = FindFirstChangeNotification("C:\\Windows\\Temp", false, 0x00000040);
+			while (noExit)
+			{
+				WaitForMultipleObjects(3, pp, false, -1);
+				prinntToDataGridView();
+				FindNextChangeNotification(pp[0]);
+				FindNextChangeNotification(pp[1]);
+				FindNextChangeNotification(pp[2]);
 			}
 		}
 	}

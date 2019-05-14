@@ -42,6 +42,7 @@ namespace calculator
 			t2.Start();
 			t3.Start();
 			timer1.Enabled = true;
+			button1.Enabled = false;
 		}
 
 		private void trackBar1_Scroll(object sender, EventArgs e)
@@ -75,24 +76,12 @@ namespace calculator
 
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			try
-			{
-				t1.Abort();
-			}
-			catch (Exception)
-			{ }
-			try
-			{
-				t2.Abort();
-			}
-			catch (Exception)
-			{ }
-			try
-			{
-				t3.Abort();
-			}
-			catch (Exception)
-			{ }
+			try { t1.Abort(); }
+			catch (Exception) { }
+			try { t2.Abort(); }
+			catch (Exception) { }
+			try { t3.Abort(); }
+			catch (Exception) { }
 		}
 
 		void thrd1()

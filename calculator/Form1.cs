@@ -126,9 +126,6 @@ namespace calculator
 			StringBuilder strFileSystemNameBuffer,
 			int lngFileSystemBameSize);
 
-		/// <summary>
-		/// /////////////////////////////////////////////////////////
-		/// </summary>
 		string additionPath = Directory.GetCurrentDirectory();
 		string subtractionPath = Directory.GetCurrentDirectory();
 		string multiplicationPath = Directory.GetCurrentDirectory();
@@ -219,35 +216,21 @@ namespace calculator
 
 				res = add.Invoke(obj, new object[] { a1, b1, a2, b2 });
 				label3.Text = res.ToString();
-			}
-			catch (Exception ex)
-			{
-				label6.Visible = false;
-				button1.Enabled = false;
-				MessageBox.Show("Could not load DLL with addition function or input error");
-			}
 
-			try
-			{
-				p = CreateFileW("C:\\Windows\\Temp\\Lab7File.txt", FileAccess.Write, FileShare.ReadWrite, IntPtr.Zero, FileMode.OpenOrCreate, FileAttributes.Normal, IntPtr.Zero);
+				p = CreateFileW("C:\\Windows\\Temp\\lab7.txt", FileAccess.Write, FileShare.ReadWrite, IntPtr.Zero, FileMode.OpenOrCreate, FileAttributes.Normal, IntPtr.Zero);
 				uint a = 0;
 				SetFilePointerEx(p, 0, out a, EMoveMethod.End);
 				natOverLap.OffsetLow = (int)a;
 
-				Assembly asm = Assembly.LoadFrom("Dll/ClassLibrary1.dll");
-				Type t = asm.GetType("Reverse", true, true);
-				object obj = Activator.CreateInstance(t);
-				MethodInfo met = t.GetMethod("TextReverse");
-				Object res = met.Invoke(obj, new object[] { rb1.Text });
-
-				rb2.Text = res.ToString();
 				byte[] b = Encoding.Default.GetBytes(res.ToString() + "\n");
 				WriteFile(p, b, b.Length, out len, ref natOverLap);
 				CloseHandle(p);
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show("Не удалось загрузить библиотеку ClassLibrary1" + ex.Message);
+				label6.Visible = false;
+				button1.Enabled = false;
+				MessageBox.Show("Could not load DLL with addition function or input error");
 			}
 		}
 
@@ -285,33 +268,21 @@ namespace calculator
 
 				res = sub.Invoke(obj, new object[] { a1, b1, a2, b2 });
 				label3.Text = res.ToString();
-			}
-			catch (Exception ex)
-			{
-				label6.Visible = false;
-				button2.Enabled = false;
-				MessageBox.Show("Could not load DLL with subtraction function or input error");
-			}
 
-			try
-			{
-				p = CreateFileW("C:\\Windows\\Temp\\Lab7File.txt", FileAccess.Write, FileShare.ReadWrite, IntPtr.Zero, FileMode.OpenOrCreate, FileAttributes.Normal, IntPtr.Zero);
+				p = CreateFileW("C:\\Windows\\Temp\\lab7.txt", FileAccess.Write, FileShare.ReadWrite, IntPtr.Zero, FileMode.OpenOrCreate, FileAttributes.Normal, IntPtr.Zero);
 				uint a = 0;
 				SetFilePointerEx(p, 0, out a, EMoveMethod.End);
 				natOverLap.OffsetLow = (int)a;
-				Assembly asm = Assembly.LoadFrom("Dll/dll3.dll");
-				Type t = asm.GetType("Translit", true, true);
-				object obj = Activator.CreateInstance(t);
-				MethodInfo met = t.GetMethod("TranslitFunc");
-				Object res = met.Invoke(obj, new object[] { rb1.Text });
-				rb2.Text = res.ToString();
+
 				byte[] b = Encoding.Default.GetBytes(res.ToString() + "\n");
 				WriteFile(p, b, b.Length, out len, ref natOverLap);
 				CloseHandle(p);
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show("Не удалось загрузить библиотеку dll3" + ex.Message);
+				label6.Visible = false;
+				button2.Enabled = false;
+				MessageBox.Show("Could not load DLL with subtraction function or input error");
 			}
 		}
 
@@ -349,6 +320,15 @@ namespace calculator
 
 				res = mul.Invoke(obj, new object[] { a1, b1, a2, b2 });
 				label3.Text = res.ToString();
+
+				p = CreateFileW("C:\\Windows\\Temp\\lab7.txt", FileAccess.Write, FileShare.ReadWrite, IntPtr.Zero, FileMode.OpenOrCreate, FileAttributes.Normal, IntPtr.Zero);
+				uint a = 0;
+				SetFilePointerEx(p, 0, out a, EMoveMethod.End);
+				natOverLap.OffsetLow = (int)a;
+
+				byte[] b = Encoding.Default.GetBytes(res.ToString() + "\n");
+				WriteFile(p, b, b.Length, out len, ref natOverLap);
+				CloseHandle(p);
 			}
 			catch (Exception ex)
 			{
@@ -356,34 +336,13 @@ namespace calculator
 				button3.Enabled = false;
 				MessageBox.Show("Could not load DLL with multiplication function or input error");
 			}
-
-			try
-			{
-				p = CreateFileW("C:\\Windows\\Temp\\Lab7File.txt", FileAccess.Write, FileShare.ReadWrite, IntPtr.Zero, FileMode.OpenOrCreate, FileAttributes.Normal, IntPtr.Zero);
-				uint a = 0;
-				SetFilePointerEx(p, 0, out a, EMoveMethod.End);
-				natOverLap.OffsetLow = (int)a;
-				Assembly asm = Assembly.LoadFrom("Dll/dll2.dll");
-				Type t = asm.GetType("ToLower", true, true);
-				object obj = Activator.CreateInstance(t);
-				MethodInfo met = t.GetMethod("ToLowerCase");
-				Object res = met.Invoke(obj, new object[] { rb1.Text });
-				rb2.Text = res.ToString();
-				byte[] b = Encoding.Default.GetBytes(res.ToString() + "\n");
-				WriteFile(p, b, b.Length, out len, ref natOverLap);
-				CloseHandle(p);
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show("Не удалось загрузить библиотеку dll2" + ex.Message);
-			}
 		}
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
 			t = new Thread(new ThreadStart(thrd));
 			t.Start();
-			prinntToDataGridView();
+			printToDataGridView();
 			t2 = new Thread(new ThreadStart(w8ForChanges));
 			t2.Start();
 		}
@@ -408,7 +367,7 @@ namespace calculator
 			FindCloseChangeNotification(pp[2]);
 		}
 
-		void prinntToDataGridView()
+		void printToDataGridView()
 		{
 			WIN32_FIND_DATA findData;
 			IntPtr findHandle = FindFirstFile("C:\\Windows\\Temp\\*", out findData);
@@ -438,7 +397,7 @@ namespace calculator
 			while (noExit)
 			{
 				WaitForMultipleObjects(3, pp, false, -1);
-				prinntToDataGridView();
+				printToDataGridView();
 				FindNextChangeNotification(pp[0]);
 				FindNextChangeNotification(pp[1]);
 				FindNextChangeNotification(pp[2]);

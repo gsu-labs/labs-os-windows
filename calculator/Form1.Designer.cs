@@ -45,6 +45,7 @@
 			this.dataGridView1 = new System.Windows.Forms.DataGridView();
 			this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.textBox5 = new System.Windows.Forms.TextBox();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -185,11 +186,19 @@
 			this.Column2.Name = "Column2";
 			this.Column2.Width = 60;
 			// 
+			// textBox5
+			// 
+			this.textBox5.Location = new System.Drawing.Point(12, 299);
+			this.textBox5.Name = "textBox5";
+			this.textBox5.Size = new System.Drawing.Size(236, 20);
+			this.textBox5.TabIndex = 15;
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(264, 305);
+			this.ClientSize = new System.Drawing.Size(264, 333);
+			this.Controls.Add(this.textBox5);
 			this.Controls.Add(this.dataGridView1);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.button3);
@@ -233,6 +242,7 @@
 		private System.Windows.Forms.DataGridView dataGridView1;
 		private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
 		private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+		private System.Windows.Forms.TextBox textBox5;
 	}
 }
 

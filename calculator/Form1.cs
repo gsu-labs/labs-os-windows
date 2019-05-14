@@ -129,6 +129,7 @@ namespace calculator
 		string additionPath = Directory.GetCurrentDirectory();
 		string subtractionPath = Directory.GetCurrentDirectory();
 		string multiplicationPath = Directory.GetCurrentDirectory();
+		string tempPath = "C:\\Windows\\Temp\\";
 
 		public Form1()
 		{
@@ -217,7 +218,7 @@ namespace calculator
 				res = add.Invoke(obj, new object[] { a1, b1, a2, b2 });
 				label3.Text = res.ToString();
 
-				p = CreateFileW("C:\\Windows\\Temp\\lab7.txt", FileAccess.Write, FileShare.ReadWrite, IntPtr.Zero, FileMode.OpenOrCreate, FileAttributes.Normal, IntPtr.Zero);
+				p = CreateFileW(tempPath + textBox5.Text, FileAccess.Write, FileShare.ReadWrite, IntPtr.Zero, FileMode.OpenOrCreate, FileAttributes.Normal, IntPtr.Zero);
 				uint a = 0;
 				SetFilePointerEx(p, 0, out a, EMoveMethod.End);
 				natOverLap.OffsetLow = (int)a;
@@ -269,7 +270,7 @@ namespace calculator
 				res = sub.Invoke(obj, new object[] { a1, b1, a2, b2 });
 				label3.Text = res.ToString();
 
-				p = CreateFileW("C:\\Windows\\Temp\\lab7.txt", FileAccess.Write, FileShare.ReadWrite, IntPtr.Zero, FileMode.OpenOrCreate, FileAttributes.Normal, IntPtr.Zero);
+				p = CreateFileW(tempPath + textBox5.Text, FileAccess.Write, FileShare.ReadWrite, IntPtr.Zero, FileMode.OpenOrCreate, FileAttributes.Normal, IntPtr.Zero);
 				uint a = 0;
 				SetFilePointerEx(p, 0, out a, EMoveMethod.End);
 				natOverLap.OffsetLow = (int)a;
@@ -321,7 +322,7 @@ namespace calculator
 				res = mul.Invoke(obj, new object[] { a1, b1, a2, b2 });
 				label3.Text = res.ToString();
 
-				p = CreateFileW("C:\\Windows\\Temp\\lab7.txt", FileAccess.Write, FileShare.ReadWrite, IntPtr.Zero, FileMode.OpenOrCreate, FileAttributes.Normal, IntPtr.Zero);
+				p = CreateFileW(tempPath + textBox5.Text, FileAccess.Write, FileShare.ReadWrite, IntPtr.Zero, FileMode.OpenOrCreate, FileAttributes.Normal, IntPtr.Zero);
 				uint a = 0;
 				SetFilePointerEx(p, 0, out a, EMoveMethod.End);
 				natOverLap.OffsetLow = (int)a;

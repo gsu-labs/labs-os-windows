@@ -17,120 +17,47 @@ namespace calculator
 	public partial class Form1 : Form
 	{
 		object lockObj = new object();
-		int i = 0, itemsCount = 0, sleepTime = 0, sleepTime2 = 0;
-		const int sizeOfStack = 6;
+		int i = 0, itemsCount = 0, sleepTime1 = 0, sleepTime2 = 0;
+		const int sizeOfStack = 7;
 		Thread t1;
 		Thread t2;
 		Thread t3;
 		Semaphore s = new Semaphore(1, 1);
 		Semaphore s2 = new Semaphore(sizeOfStack, sizeOfStack);
 
-		bool isRunning = true;
-
-		int first = 0;
-		int second = 0;
-		int third = 0;
-
-		Thread t;
-		IntPtr p1;
-		IntPtr p2;
-		IntPtr p3;
-
 		public Form1()
 		{
 			InitializeComponent();
-		}
-
-		public string Complex(int a, int b)
-		{
-			if (a != 0)
-			{
-				if (b < 0)
-					return (a).ToString() + (b).ToString() + "i";
-				else if (b > 0)
-					return (a).ToString() + "+" + (b).ToString() + "i";
-				else
-					return (a).ToString();
-			}
-			else
-			{
-				if (b != 0)
-					return (b).ToString() + "i";
-				else
-					return "0";
-			}
-		}
-
-		void F1()
-		{
-			while (true)
-			{
-				addition add = new addition();
-				add.add(0,0,0,0);
-				first++;
-			}
-		}
-
-		void F2()
-		{
-			while (true)
-			{
-				subtraction sub = new subtraction();
-				sub.sub(0,0,0,0);
-				second++;
-			}
-		}
-
-		void thrd()
-		{
-			while (true)
-			{
-				Thread.Sleep(1000);
-				label5.Invoke(new Action(() => label5.Text = first.ToString()));
-				label6.Invoke(new Action(() => label6.Text = second.ToString()));
-				label7.Invoke(new Action(() => label7.Text = third.ToString()));
-				first = 0;
-				second = 0;
-				third = 0;
-			}
+			dataGridView1.RowHeadersVisible = false;
+			dataGridView2.RowHeadersVisible = false;
 		}
 
 		private void button1_Click(object sender, EventArgs e)
 		{
-			uint threadID1;
-			uint threadID2;
-			uint threadID3;
-			ThreadStart threadStart = thrd;
-			p1 = CreateThread(0, 0, F1, 0, 0, out threadID1);
-			p2 = CreateThread(0, 0, F2, 0, 0, out threadID2);
-			p3 = CreateThread(0, 0, F3, 0, 0, out threadID3);
-			t = new Thread(threadStart);
-			t.Start();
-			button1.Enabled = false;
-		}
-
-		private void button2_Click(object sender, EventArgs e)
-		{
-			if (isRunning)
-			{
-				t.Suspend();
-				isRunning = false;
-				button2.Text = "RESUME";
-			}
-			else
-			{
-				first = 0;
-				second = 0;
-				third = 0;
-				t.Resume();
-				isRunning = true;
-				button2.Text = "STOP";
-			}
+			t1 = new Thread(new ThreadStart(thrd1));
+			t2 = new Thread(new ThreadStart(thrd2));
+			t3 = new Thread(new ThreadStart(thrd3));
+			t1.Start();
+			t2.Start();
+			t3.Start();
+			timer1.Enabled = true;
 		}
 
 		private void trackBar1_Scroll(object sender, EventArgs e)
 		{
-			SetThreadPriority(p1, trackBar1.Value);
+			sleepTime1 = trackBar1.Value;
+		}
+
+		private void trackBar2_Scroll(object sender, EventArgs e)
+		{
+			sleepTime2 = trackBar2.Value;
+		}
+
+		private void timer1_Tick(object sender, EventArgs e)
+		{
+			label6.Text = t1.ThreadState.ToString();
+			label7.Text = t2.ThreadState.ToString();
+			label8.Text = t3.ThreadState.ToString();
 		}
 
 		private void Form1_Load(object sender, EventArgs e)
@@ -142,23 +69,11 @@ namespace calculator
 				MessageBox.Show("The app is running!");
 				this.Close();
 			}
-			dataGridView2.RowCount = sizeOfStack;
-		}
-
-		private void trackBar2_Scroll(object sender, EventArgs e)
-		{
-			SetThreadPriority(p2, trackBar2.Value);
+			dataGridView1.RowCount = sizeOfStack;
 		}
 
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			//if (isRunning)
-			//	t.Abort();
-			//else
-			//{
-			//	t.Resume();
-			//	t.Abort();
-			//}
 			try
 			{
 				t1.Abort();
@@ -177,6 +92,71 @@ namespace calculator
 			}
 			catch (Exception)
 			{ }
+		}
+
+		void thrd1()
+		{
+			while (true)
+			{
+				Thread.Sleep(sleepTime1);
+				addition add = new addition();
+				Random r = new Random();
+				string str = $"1. {add.add(r.Next(-100, 100), r.Next(-100, 100), r.Next(-100, 100), r.Next(-100, 100))}";
+				s.WaitOne();
+				s2.WaitOne();
+				lock (lockObj)
+				{
+					for (int i = itemsCount; i > 0; i--)
+					{
+						dataGridView1.Invoke(new Action(() => dataGridView1.Rows[i].Cells[0].Value = dataGridView1.Rows[i - 1].Cells[0].Value));
+					}
+					dataGridView1.Invoke(new Action(() => dataGridView1.Rows[0].Cells[0].Value = str));
+					itemsCount++;
+				}
+				s.Release();
+			}
+		}
+
+		void thrd2()
+		{
+			while (true)
+			{
+				Thread.Sleep(sleepTime1);
+				subtraction sub = new subtraction();
+				Random r = new Random();
+				string str = $"2. {sub.sub(r.Next(-100, 100), r.Next(-100, 100), r.Next(-100, 100), r.Next(-100, 100))}";
+				s.WaitOne();
+				s2.WaitOne();
+				lock (lockObj)
+				{
+					for (int i = itemsCount; i > 0; i--)
+					{
+						dataGridView1.Invoke(new Action(() => dataGridView1.Rows[i].Cells[0].Value = dataGridView1.Rows[i - 1].Cells[0].Value));
+					}
+					dataGridView1.Invoke(new Action(() => dataGridView1.Rows[0].Cells[0].Value = str));
+					itemsCount++;
+				}
+				s.Release();
+			}
+		}
+
+		void thrd3()
+		{
+			while (true)
+			{
+				if (itemsCount > 0 && itemsCount < sizeOfStack)
+				{
+					lock (lockObj)
+					{
+						Thread.Sleep(sleepTime2);
+						dataGridView2.Invoke(new Action(() => dataGridView2.RowCount += 1));
+						dataGridView2.Invoke(new Action(() => dataGridView2.Rows[i++].Cells[0].Value = dataGridView1.Rows[itemsCount - 1].Cells[0].Value));
+						dataGridView2.Invoke(new Action(() => dataGridView1.Rows[itemsCount - 1].Cells[0].Value = ""));
+						itemsCount--;
+					}
+					s2.Release();
+				}
+			}
 		}
 	}
 }

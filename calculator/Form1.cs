@@ -30,6 +30,7 @@ namespace calculator
 			InitializeComponent();
 			dataGridView1.RowHeadersVisible = false;
 			dataGridView2.RowHeadersVisible = false;
+			dataGridView2.RowCount = sizeOfStack;
 		}
 
 		private void button1_Click(object sender, EventArgs e)
